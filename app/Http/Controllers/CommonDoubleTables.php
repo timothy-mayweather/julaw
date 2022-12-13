@@ -12,10 +12,15 @@ class CommonDoubleTables extends Controller
     public array $update_keys = [];
     public array $validations = [];
     public string $modelClass;
-    public object $modelObject;
     public array $selectColumns = ['*'];
     public array $indexColumns;
 
+    public function getModelObject(): object
+    {
+        $object = new $this->modelClass();
+        $object->change_table();
+        return $object;
+    }
 
     /**
      * Display a listing of the resource.
@@ -28,7 +33,7 @@ class CommonDoubleTables extends Controller
         if($request->user()->manager==="No") {
             return Response($this->modelClass::all($this->indexColumns ?? $this->selectColumns));
         }
-        return $this->modelObject->get();
+        return $this->getModelObject()->get();
     }
 
     public function in_update(string $key, Request $request, array $record, object $instance, array &$custom_validations): void
@@ -45,7 +50,7 @@ class CommonDoubleTables extends Controller
         $records = $request->input('records');
         $responses = [];
         foreach ($records as $id=>$record){
-            $instance = ($request->user()->manager==="No")?$this->modelClass::find($id):$this->modelObject->find($id);
+            $instance = ($request->user()->manager==="No")?$this->modelClass::find($id):$this->getModelObject()->find($id);
             $record['b'] = $request->user()->branch_id;
             if($instance===null){
                 return Response(['record'=>["Record with id $id does not exist! Refresh"]]);
@@ -90,7 +95,7 @@ class CommonDoubleTables extends Controller
      */
     public function destroy(Request $request, string $id): Response
     {
-        $inst = $this->modelObject->find($id);
+        $inst = $this->getModelObject()->find($id);
         if($request->user()->manager==="No"){
             $inst = $this->modelClass::find($id);
         }
@@ -133,6 +138,7 @@ class CommonDoubleTables extends Controller
                 return Response($validator->errors());
             }
             $arr = $this->keep($request,$record,$validator,$count);
+
             if($arr[0]===1){
                 return Response($arr[1]);
             }
@@ -141,10 +147,9 @@ class CommonDoubleTables extends Controller
                 $this->modelClass::create($arr[1]);
             }
             else{
-                $this->modelObject->fill($arr[1]);
-                $this->modelObject->save();
+                $obj = $this->getModelObject()->fill($arr[1]);
+                $obj->save();
             }
-
             $count++;
         }
         return Response(0);

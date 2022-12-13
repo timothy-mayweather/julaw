@@ -5,7 +5,7 @@ import {Select,Input, CheckBox, DelBtn, SelectBox} from "@/Components/FormCompon
 const Nozzle = () => {
   const url = '/nozzle'
   const context = 'Nozzle'
-  const headings = ['TANK', 'PUMP', 'NAME', 'ACTIVE']
+  const headings = ['TANK', 'PUMP', 'NAME', 'ACTIVE?']
   const dataObj = new DataManager('nozzles',  {tank:'', pump:'', name:'', active:'Yes'}, url);
 
   const insertRows = (rowData, pos, handleDelete, handleChange, dataObj) => {
@@ -42,7 +42,7 @@ const Nozzle = () => {
     />
   }
 
-  const displayRows = (rowData, deleteObj, editState, handleChange, dataObj) => {
+  const displayRows = (rowData, selectedDel, editState, handleChange, dataObj) => {
     const sharedProps = {handleChange, dataId:rowData['id']}
     let tanks = dataObj.providedData.hasOwnProperty('tanks')?dataObj.providedData['tanks'].filter((el)=>el['id']!==rowData['tank_id']):[];
     let pumps = dataObj.providedData.hasOwnProperty('pumps')?dataObj.providedData['pumps'].filter((el)=>el['id']!==rowData['pump_id']):[];
@@ -63,8 +63,8 @@ const Nozzle = () => {
       </td>
 
       <td>{!editState?rowData['name']:<Input name='name' type='lower' defaultValue={rowData['name']} {...sharedProps}/>}</td>
-      <td>{!editState?rowData['active']:<CheckBox name='active' checked={rowData['active']==='Yes'} {...sharedProps}/>}</td>
-      <td hidden={!editState}><SelectBox value={rowData['id']} checked={deleteObj[rowData['id']]} handleChange={handleChange}/></td>
+      <td>{!editState?rowData['active']:<CheckBox name='active' defaultChecked={rowData['active']==='Yes'} {...sharedProps}/>}</td>
+      <td hidden={!editState}><SelectBox value={rowData['id']} checked={selectedDel[rowData['id']]} handleChange={handleChange}/></td>
     </tr>
   }
 

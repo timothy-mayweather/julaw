@@ -5,7 +5,7 @@ import {Input, CheckBox, DelBtn, SelectBox} from "@/Components/FormComponents";
 const Pump = () => {
   const url = '/pump'
   const context = 'Pump'
-  const headings = ['NAME', 'DESCRIPTION', 'ACTIVE']
+  const headings = ['NAME', 'DESCRIPTION', 'ACTIVE?']
   const dataObj = new DataManager('pumps',  {name:'', description:'', active:'Yes'}, url);
 
   const insertRows = (rowData, pos, handleDelete, handleChange) => {
@@ -29,14 +29,14 @@ const Pump = () => {
     />
   }
 
-  const displayRows = (rowData, deleteObj, editState, handleChange) => {
+  const displayRows = (rowData, selectedDel, editState, handleChange) => {
     const sharedProps = {handleChange, dataId:rowData['id']}
 
     return <tr>
       <td>{!editState?rowData['name']:<Input name='name' type='lower' defaultValue={rowData['name']} {...sharedProps}/>}</td>
       <td>{!editState?rowData['description']:<Input name='description' type='lower' defaultValue={rowData['description']} {...sharedProps}/>}</td>
-      <td>{!editState?rowData['active']:<CheckBox name='active' checked={rowData['active']==='Yes'} {...sharedProps}/>}</td>
-      <td hidden={!editState}><SelectBox value={rowData['id']} checked={deleteObj[rowData['id']]} handleChange={handleChange}/></td>
+      <td>{!editState?rowData['active']:<CheckBox name='active' defaultChecked={rowData['active']==='Yes'} {...sharedProps}/>}</td>
+      <td hidden={!editState}><SelectBox value={rowData['id']} checked={selectedDel[rowData['id']]} handleChange={handleChange}/></td>
     </tr>
   }
 

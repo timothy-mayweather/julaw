@@ -9,7 +9,10 @@ const Input = (
     row,
     dataId,
     defaultValue,
-    hidden=false
+    hidden=false,
+    style,
+    placeholder,
+    disabled
   }) => {
 
   const validator = (type)=>{
@@ -40,6 +43,7 @@ const Input = (
   return (
     <input
       type="text"
+      style={style}
       name={name}
       onInput={onInput}
       className={"form-control "+className}
@@ -51,6 +55,8 @@ const Input = (
       data-id={dataId}
       data-old-value={defaultValue}
       hidden={hidden}
+      placeholder={placeholder}
+      disabled={disabled}
     />
   );
 }

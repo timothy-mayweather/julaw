@@ -22,7 +22,7 @@ class BranchTransactionTypeController extends CommonPivot
      * @param string $val
      * @return Response
      */
-    public function show(Request $request,string $val): Response
+    public function show(Request $request, string $val): Response
     {
         if(str_starts_with($val,'_')){
             $b=$request->user()->branch_id;

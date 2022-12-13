@@ -75,7 +75,8 @@ function getToday(){
   const date = new Date();
   const day = date.getDate().toString()
   const month = (date.getMonth()+1).toString();
-  return (day.length===1?"0"+day:day)+"/"+(month.length===1?"0"+month:month)+"/"+date.getFullYear();
+  // return (day.length===1?"0"+day:day)+"/"+(month.length===1?"0"+month:month)+"/"+date.getFullYear();
+  return "03/12/2022";
 }
 
 const omitProperties = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key)));

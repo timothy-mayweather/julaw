@@ -7,13 +7,16 @@ const DisplayTableSection = (
     data,
     editState,
     setEditState,
-    deleteObj,
+    selectedDel,
     updateObj,
     handleChange,
     handleBtnClicks,
-    requestSpinner}
+    requestSpinner,
+    supportAdd
+  }
   )=>{
-  const tableProps = {context, data, deleteObj, show, editState, handleChange}
+
+  const tableProps = {context, data, selectedDel, show, editState, handleChange}
 
   return (
     <>
@@ -22,7 +25,11 @@ const DisplayTableSection = (
         {!editState?<><i className="fas fa-pen"></i> Edit</>: <><i className="fas fa-stop"></i> Stop editing</>}
       </button>
 
-      {Object.values(deleteObj).slice(1).includes(true)?<button type="button" className="btn btn-outline-danger" style={{marginRight:"5px"}} onClick={()=>{handleBtnClicks('delete')}}>
+      {(supportAdd && Object.values(selectedDel).slice(1).includes(true))?<button type="button" className="btn btn-outline-secondary" style={{marginRight:"5px"}} onClick={()=>{handleBtnClicks('add')}}>
+        <i className="fas fa-plus"></i> Add
+      </button>:null}
+
+      {Object.values(selectedDel).slice(1).includes(true)?<button type="button" className="btn btn-outline-danger" style={{marginRight:"5px"}} onClick={()=>{handleBtnClicks('delete')}}>
         <i className="fas fa-trash"></i> Delete
       </button>:null}
 

@@ -64,7 +64,7 @@ const Meters = () => {
     />
   }
 
-  const displayRows = (rowData, deleteObj, editState, handleChange, dataObj) => {
+  const displayRows = (rowData, selectedDel, editState, handleChange, dataObj) => {
     const sharedProps = {handleChange, dataId:rowData['id']}
     let nozzles = dataObj.providedData.hasOwnProperty('nozzles')?dataObj.providedData['nozzles'].filter((el)=>el['id']!==rowData['nozzle_id']):[];
     let litres = rowData['closing']-rowData['opening']-rowData['rtt'];
@@ -83,7 +83,7 @@ const Meters = () => {
       <td>{litres}</td>
       <td>{!editState?rowData['price']:<Input name='price' type='float' defaultValue={rowData['price']} {...sharedProps}/>}</td>
       <td>{litres*rowData['price']}</td>
-      <td hidden={!editState}><SelectBox value={rowData['id']} checked={deleteObj[rowData['id']]} handleChange={handleChange}/></td>
+      <td hidden={!editState}><SelectBox value={rowData['id']} checked={selectedDel[rowData['id']]} handleChange={handleChange}/></td>
     </tr>
   }
 

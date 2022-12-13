@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static where(string $string, string $type)
  * @method static select(string[] $array)
  */
-class ProductType extends Model
+class EmployeeRole extends Model
 {
     use HasFactory;
 
@@ -24,7 +24,7 @@ class ProductType extends Model
    * @var array
    */
   protected $fillable = [
-      'type',
+      'role',
       'created_at',
       'updated_at',
       'user_',
@@ -32,9 +32,9 @@ class ProductType extends Model
       'provisional'
   ];
 
-  public function products(): HasMany
+  public function employees(): HasMany
   {
-      return $this->hasMany(Product::class,'type');
+      return $this->hasMany(Employee::class,'role');
   }
 
 }

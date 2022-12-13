@@ -37,7 +37,7 @@ export default function DataManager (dataName, defaultValues, url, nonRequiredFi
     if(providedData.hasOwnProperty(resource)) return;
     const url = e.currentTarget.getAttribute('data-url')
 
-    axios.get(url+"?data_date='"+axios.defaults.data['data_date']+"'").then((response)=>{
+    axios.get(url+"?data_date="+axios.defaults.data['data_date']+"").then((response)=>{
       setProvidedData({...providedData, [resource]:response.data})
     })
   }
@@ -51,12 +51,18 @@ export default function DataManager (dataName, defaultValues, url, nonRequiredFi
     if(dataChangeAttr){
       const providedDetails = providedData[e.target.getAttribute('data-resource')].filter((row)=>row['id'].toString()===e.target.value)[0];
       const attrs = dataChangeAttr.split(' ')
+
       attrs.forEach((attr)=>{
-        if(attr.includes(':')){
-          const keyValue = attr.split(':');
-          obj[keyValue[0]] = providedDetails[keyValue[1]].toString()
-        }else{
-          obj[attr] = providedDetails[attr].toString()
+        if(providedDetails) {
+          if (attr.includes(':')) {
+            const keyValue = attr.split(':');
+            obj[keyValue[0]] = providedDetails[keyValue[1]].toString()
+          } else {
+            obj[attr] = providedDetails[attr].toString()
+          }
+        }
+        else{
+          obj[attr] = defaultValues[attr]
         }
       })
     }
@@ -82,7 +88,7 @@ export default function DataManager (dataName, defaultValues, url, nonRequiredFi
 
     const recordKeys = Object.keys(data);
 
-    axios.post(url+"?data_date='"+axios.defaults.data['data_date']+"'", {
+    axios.post(url+"?data_date="+axios.defaults.data['data_date']+"", {
       records: recordKeys.map((key)=>data[key])
     })
       .then(function (response) {

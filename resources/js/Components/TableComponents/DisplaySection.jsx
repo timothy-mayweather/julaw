@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import DisplayTableSection from "@/Components/TableComponents/DisplayTableSection";
 
-const DisplaySection = ({context, btnText=null, table, url, documentColumns, documentTitle}) => {
+const DisplaySection = ({context, btnText=null, table, url, documentColumns, documentTitle, supportAdd=false}) => {
   const [showTableSection, setShowTableSection] = useState(false);
   const [data, setData] = useState([]);
-  const [deleteObj, setDeleteObj] = useState({'0':false});
+  const [selectedDel, setSelectedDel] = useState({'0':false});
+  const [selectedAdd, setSelectedAdd] = useState({'0':false});
   const [updateObj, setUpdateObj] = useState({});
   const show = () =>setShowTableSection(!showTableSection);
   const [spinner, setSpinner] = useState(true);
@@ -17,12 +18,21 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
 
   const fetchData = () =>{
     setSpinner(false);
-    axios.get(fetchUrl+"?data_date='"+axios.defaults.data['data_date']+"'",).then(function (response) {
-      setDeleteObj(((obj={...deleteObj, ['0']:false})=>{response.data.map((rowData)=>[rowData['id']]).forEach((id)=>{obj[id] = false}); return obj})())
-      setData(((obj={})=>{response.data.forEach((rowData)=>{obj[rowData['id']]=rowData}); return obj})())
-      setUpdateObj({})
-      show();
-      setSpinner(true);
+    axios.get(fetchUrl+"?data_date="+axios.defaults.data['data_date']+"",).then(function (response) {
+      if(Array.isArray(response.data)){
+        if (response.data.length === 0){
+          setSpinner(true);
+          $.notify('No data')
+          return
+        }
+      }
+
+      console.log(response.data)
+      // setSelectedDel(((obj={...selectedDel, ['0']:false})=>{response.data.map((rowData)=>[rowData['id']]).forEach((id)=>{obj[id] = false}); return obj})())
+      // setData(((obj={})=>{response.data.forEach((rowData)=>{obj[rowData['id']]=rowData}); return obj})())
+      // setUpdateObj({})
+      // show();
+      // setSpinner(true);
     })
   }
 
@@ -59,12 +69,13 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
     if(e.currentTarget.name==="select"){
       const value = e.currentTarget.value;
       const obj = (value==='0')?
-        ((obj={})=>{Object.keys(deleteObj).forEach((key)=>{obj[key]=!(deleteObj[value])}); return obj})()
-        :{...deleteObj, [value]:!(deleteObj[value])}
-      setDeleteObj(obj);
+        ((obj={})=>{Object.keys(selectedDel).forEach((key)=>{obj[key]=!(selectedDel[value])}); return obj})()
+        :{...selectedDel, [value]:!(selectedDel[value])}
+      setSelectedDel(obj);
     }
     else {
       const id = e.currentTarget.getAttribute('data-id')
+
       const obj = {...updateObj, [id]:{...updateObj[id], [e.currentTarget.name]:e.currentTarget.type==='checkbox'?(e.currentTarget.checked?'Yes':'No'):e.currentTarget.value}}
       if(e.currentTarget.type==='select-one'){
         obj[id][e.currentTarget.name] = e.currentTarget.options[e.currentTarget.selectedIndex].innerHTML;
@@ -88,7 +99,7 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
       return
 
     axios.post(url+'/destroy', {
-      ids: Object.keys(deleteObj).slice(1).filter((key)=>deleteObj[key])
+      ids: Object.keys(selectedDel).slice(1).filter((key)=>selectedDel[key])
     }).then((response)=>{
       const deletedIds = response.data.filter((el)=>el['resp']===true).map((el)=>el['id']);
       const unDeletedIds = response.data.filter((el)=>el['resp']===false).map((el)=>el['id']);
@@ -99,7 +110,7 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
 
       const obj = omitProperties(data, deletedIds);
       setData(obj);
-      setDeleteObj(omitProperties(deleteObj, deletedIds))
+      setSelectedDel(omitProperties(selectedDel, deletedIds))
       setReqSpinner(true)
       if(Object.keys(obj).length===0){
         show()
@@ -144,11 +155,15 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
     })
   }
 
-  const handleBtnClicks = (action)=>{action==='delete'?deleteData():updateData()}
+  const addData = () => {
+    console.log('add')
+  }
+
+  const handleBtnClicks = (action)=>{({'delete':deleteData, 'update':updateData, 'add':addData})[action]()}
 
   return (
     <div style={{marginBottom: "5px"}}>
-      {showTableSection ? <DisplayTableSection context={context} table={table} show={show} data={data} editState={editState} setEditState={setEditState} deleteObj={deleteObj} updateObj={updateObj} handleChange={handleChange} handleBtnClicks={handleBtnClicks} requestSpinner={reqSpinner}/>:<><button type="button" className={"btn btn-outline-primary"} onClick={fetchData}>{btnText === null? ('View Or Edit '+context+'s'): btnText}</button>
+      {showTableSection ? <DisplayTableSection context={context} table={table} show={show} data={data} editState={editState} setEditState={setEditState} selectedDel={selectedDel} updateObj={updateObj} handleChange={handleChange} handleBtnClicks={handleBtnClicks} requestSpinner={reqSpinner} supportAdd={supportAdd}/>:<><button type="button" className={"btn btn-outline-primary"} onClick={fetchData}>{btnText === null? ('View Or Edit '+context+'s'): btnText}</button>
         <span className="spinner-border text-primary spinner-border-sm ml-2" hidden={spinner}></span></>}
     </div>
   );

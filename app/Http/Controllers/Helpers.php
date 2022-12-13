@@ -2,8 +2,8 @@
 namespace App\Http\Controllers;
 
 trait Helpers{
-    public function date_to_int(string $dateString): int
+    public function date_to_int(string $dateString): string
     {
-        return (round(strtotime($dateString)/86400)+1);
+        return (string)(round(strtotime($dateString) / 86400) + 1);
     }
 }

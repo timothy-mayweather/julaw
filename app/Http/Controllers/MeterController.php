@@ -31,8 +31,6 @@ class MeterController extends CommonDoubleTables
     public function __construct()
     {
         $this->modelClass = Meter::class;
-        $this->modelObject = new Meter();
-        $this->modelObject->change_table();
     }
 
     public function keep(Request $request, array $record,$validator,$count): array
@@ -66,8 +64,9 @@ class MeterController extends CommonDoubleTables
             ]];
         }
 
-        $unique_int = $record['nozzle'].$this->date_to_int($request->data_date);
-        $meters = $this->modelObject->select('unique_int')->where('unique_int',$unique_int)->get();
+        $unique_int = ((string)$record['nozzle']).$this->date_to_int($request->data_date);
+
+        $meters = $this->getModelObject()->select('unique_int')->where('unique_int',$unique_int)->get();
         if (count($meters)>0){
             $validator->errors()->add('meter','Record already exists');
             $validator->errors()->add('row', $count);

@@ -3,51 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
-use App\Models\User;
+use App\Models\EmployeeRole;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Http\Response;
 
 class EmployeeController extends Common
 {
-    public array $update_keys = ['name','phone','email','active'];
+    public array $update_keys = ['name','phone','email','role','active'];
     public array $validations = [
         'name' => 'required|string',
         'phone' => 'required|string',
         'email' => 'nullable|email',
+        'role' => 'required|integer',
         'active' => 'required'
     ];
+
     public string $modelClass = Employee::class;
-    public array $selectColumns = ['id','name','phone','email','active','user_id'];
+    public array $selectColumns = ['id','name','phone','email','role', 'active','user_id'];
+
+    public function index(): Response
+    {
+        $products = Employee::addSelect(['role_name' => EmployeeRole::select(['role'])->whereColumn('id','employees.role')])->get();
+        return Response($products);
+    }
 
     public function keep(Request $request, array $record,$validator,$count): array
     {
-        $user_id = null;
-        if($record['user'] === 'Yes') {
-            $user = new User([
-                'name' => $record['name'],
-                'email' => $record['email'],
-                'phone' => $record['phone'],
-                'manager' => 'No',
-                'branch_id' => $request->user()->branch_id,
-                'password' => Hash::make(hrtime(true)),
-                'user_' => $request->user()->id,
-            ]);
-            if (config('database.default')==='sqlite') {
-                $user->setAttribute('id',0);
-                $user->setAttribute('provisional',Str::uuid()->toString());
-            }
-            $user->save();
-            $user_id = User::where('email', $record['email'])->get()[0];
-
-        }
-
         return [0,[
-            'user_id' => $user_id,
             'user_' => $request->user()->id,
             'name' => $record['name'],
             'phone' => $record['phone'],
             'email' => $record['email'],
+            'role' => $record['role'],
             'active' => $record['active'],
             'branch_id' => $request->user()->branch_id
         ]];

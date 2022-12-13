@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -148,7 +146,9 @@ class Common extends Controller
             $modelObj = new $this->modelClass($arr[1]);
             if (config('database.default')==='sqlite') {
                 $modelObj->setAttribute('id',0);
-                $modelObj->setAttribute('provisional',Str::uuid()->toString());
+                if($modelObj->isFillable('provisional')) {
+                    $modelObj->setAttribute('provisional', Str::uuid()->toString());
+                }
             }
             $modelObj->save();
             $count++;

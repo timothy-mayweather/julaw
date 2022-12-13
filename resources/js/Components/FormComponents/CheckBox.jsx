@@ -4,7 +4,8 @@ const CheckBox = (
   {
     name,
     className="",
-    checked=true,
+    checked,
+    defaultChecked,
     handleChange,
     row,
     dataId
@@ -16,11 +17,12 @@ const CheckBox = (
         type="checkbox"
         name={name}
         className={"form-check-input "+className}
-        defaultChecked={checked}
+        defaultChecked={defaultChecked}
+        checked={checked}
         onChange={handleChange}
         data-row={row}
         data-id={dataId}
-        data-old-value={checked?'Yes':'No'}
+        data-old-value={defaultChecked?'Yes':'No'}
       />
     </span>
   );

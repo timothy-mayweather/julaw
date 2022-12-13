@@ -81,6 +81,7 @@ class CreateMajorTables extends Migration
             $table->string('email')->unique();
             if ($this->connection === 'sqlite') {
                 $table->enum('manager', ['No', 'Yes', 'Root'])->default('No');
+                $table->uuid('employee_provisional')->nullable();
             }else{
                 $table->enum('manager', ['No', 'Yes', 'Root','Client'])->default('No');
             }
@@ -92,16 +93,41 @@ class CreateMajorTables extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade');
         });
         $this->mk_provisional_trigger($tab);
+        if ($this->connection === 'sqlite') {
+            DB::unprepared("
+                create trigger if not exists make_users_employees after insert on users for each row when new.employee_provisional is not null
+                BEGIN
+                    insert into employees (provisional, name, phone, email, role, branch_id, user_id) values (new.employee_provisional, new.name, new.phone, new.email, null, new.branch_id, new.id);
+                    update users set employee_provisional=null where id=new.id;
+                END;
+            ");
+        }
+
+        $tab = 'employee_roles';
+        Schema::create($tab, function (Blueprint $table) {
+            $this->mk_provisional($table);
+            $table->string('role')->unique();
+            $table->foreignId('user_');
+            $table->foreignId('user_d')->nullable();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
+            $table->softDeletes();
+            $table->foreign('user_d')->references('id')->on('users')->onUpdate('cascade');
+            $table->foreign('user_')->references('id')->on('users')->onUpdate('cascade');
+        });
+        $this->mk_provisional_trigger($tab);
 
         $tab = 'employees';
-        Schema::create($tab, function (Blueprint $table) {//----
+        Schema::create($tab, function (Blueprint $table) {
             $this->mk_provisional($table);
-            $table->string('name');
-            $table->string('phone');
+            $table->string('name')->nullable();
+            $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->foreignId('role');
             $table->foreignId('branch_id');
             $table->foreignId('user_id')->nullable();
             $this->defColumn3($table);
+            $table->foreign('role')->references('id')->on('employee_roles')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade');
         });
@@ -267,6 +293,7 @@ class CreateMajorTables extends Migration
         Schema::dropIfExists('products');
         Schema::dropIfExists('product_types');
         Schema::dropIfExists('employees');
+        Schema::dropIfExists('employee_roles');
         Schema::dropIfExists('users');
         Schema::dropIfExists('branches');
         Schema::dropIfExists('action_resolution');
