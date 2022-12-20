@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import DisplayTableSection from "@/Components/TableComponents/DisplayTableSection";
+import {usePage} from "@inertiajs/inertia-react";
 
-const DisplaySection = ({context, btnText=null, table, url, documentColumns, documentTitle, supportAdd=false}) => {
+const DisplaySection = ({context, btnText=null, table, url, documentColumns, documentTitle, joinedTable=false}) => {
   const [showTableSection, setShowTableSection] = useState(false);
   const [data, setData] = useState([]);
   const [selectedDel, setSelectedDel] = useState({'0':false});
@@ -11,14 +12,16 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
   const [spinner, setSpinner] = useState(true);
   const [reqSpinner, setReqSpinner] = useState(true);
   const tableId = "#edit"+context[0].toUpperCase()+context.slice(1)+"Table";
-  const [editState, setEditState] = useState(false);
+  const [editState, setEditState] = useState(joinedTable);
   const dataTable = $(tableId);
-  let fetchUrl = url;
+  const branch = usePage().props.auth.branch
+  let fetchUrl = (joinedTable)?url+'/'+branch.id:url;
   url = url.includes('/show')?url.slice(0,url.indexOf('/show')):url
 
   const fetchData = () =>{
     setSpinner(false);
     axios.get(fetchUrl+"?data_date="+axios.defaults.data['data_date']+"",).then(function (response) {
+
       if(Array.isArray(response.data)){
         if (response.data.length === 0){
           setSpinner(true);
@@ -27,12 +30,13 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
         }
       }
 
-      console.log(response.data)
-      // setSelectedDel(((obj={...selectedDel, ['0']:false})=>{response.data.map((rowData)=>[rowData['id']]).forEach((id)=>{obj[id] = false}); return obj})())
-      // setData(((obj={})=>{response.data.forEach((rowData)=>{obj[rowData['id']]=rowData}); return obj})())
-      // setUpdateObj({})
-      // show();
-      // setSpinner(true);
+      if(joinedTable)
+        setSelectedAdd(((obj={...selectedAdd, ['0']:false})=>{(response.data.map((rowData)=>[rowData['id']])).filter((id)=>Math.abs(Number(id))<1).forEach((id)=>{obj[id] = false}); return obj})())
+      setSelectedDel(((obj={...selectedDel, ['0']:false})=>{(response.data.map((rowData)=>[rowData['id']])).filter((id)=>Math.abs(Number(id))>=1).forEach((id)=>{obj[id] = false}); return obj})())
+      setData(((obj={})=>{response.data.forEach((rowData)=>{obj[rowData['id']]=rowData}); return obj})())
+      setUpdateObj({})
+      show();
+      setSpinner(true);
     })
   }
 
@@ -72,6 +76,13 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
         ((obj={})=>{Object.keys(selectedDel).forEach((key)=>{obj[key]=!(selectedDel[value])}); return obj})()
         :{...selectedDel, [value]:!(selectedDel[value])}
       setSelectedDel(obj);
+    }
+    else if(e.currentTarget.name==="add"){
+      const value = e.currentTarget.value;
+      const obj = (value==='0')?
+        ((obj={})=>{Object.keys(selectedAdd).forEach((key)=>{obj[key]=!(selectedAdd[value])}); return obj})()
+        :{...selectedAdd, [value]:!(selectedAdd[value])}
+      setSelectedAdd(obj);
     }
     else {
       const id = e.currentTarget.getAttribute('data-id')
@@ -156,14 +167,56 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
   }
 
   const addData = () => {
-    console.log('add')
+    let postData = {};
+
+    Object.keys(selectedAdd).filter(key=>Number(key)>0).forEach((key)=>{
+      if(selectedAdd[key])
+        postData[key] = (updateObj.hasOwnProperty(key))?{...data[key], ...updateObj[key]}:data[key];
+    });
+
+    axios.post(url+"?data_date="+axios.defaults.data['data_date']+"", {
+      records: postData,
+      branch: branch.id
+    })
+      .then(function (response) {
+        let saved = Object.values(response.data).filter(val=>Math.abs(Number(val))>=1).length
+        let notSaved = Object.values(response.data).filter(val=>Math.abs(Number(val))<1).length
+
+        if (saved > 0){
+          $.notify(saved+' records saved', {className:"success", position: "top right", autoHideDelay: 5000});
+        }
+
+        if (notSaved > 0){
+          $.notify(notSaved+' records not saved!', {position: "top right", autoHideDelay: 5000});
+        }
+
+        let newObj = {}
+        let oldObj = {...data}
+
+        Object.keys(response.data).forEach((key)=>{
+          newObj[response.data[key]] = {...data[key], 'id':response.data[key]}
+          delete oldObj[key];
+        });
+
+        newObj = {...oldObj, ...newObj}
+
+        setData(newObj)
+        setSelectedAdd(((obj={['0']:false})=>{(Object.keys(newObj)).filter((id)=>Math.abs(Number(id))<1).forEach((id)=>{obj[id] = false}); return obj})())
+        setSelectedDel(((obj={['0']:false})=>{(Object.keys(newObj)).filter((id)=>Math.abs(Number(id))>=1).forEach((id)=>{obj[id] = false}); return obj})())
+        setUpdateObj({})
+      })
+      .catch(function (e) {
+        $.notify("An error occurred", {position: "top right", autoHideDelay: 5000})
+        console.log(e)
+      });
+
   }
 
   const handleBtnClicks = (action)=>{({'delete':deleteData, 'update':updateData, 'add':addData})[action]()}
 
   return (
     <div style={{marginBottom: "5px"}}>
-      {showTableSection ? <DisplayTableSection context={context} table={table} show={show} data={data} editState={editState} setEditState={setEditState} selectedDel={selectedDel} updateObj={updateObj} handleChange={handleChange} handleBtnClicks={handleBtnClicks} requestSpinner={reqSpinner} supportAdd={supportAdd}/>:<><button type="button" className={"btn btn-outline-primary"} onClick={fetchData}>{btnText === null? ('View Or Edit '+context+'s'): btnText}</button>
+      {showTableSection ? <DisplayTableSection context={context} table={table} show={show} data={data} editState={editState} setEditState={setEditState} selectedDel={selectedDel} selectedAdd={selectedAdd} updateObj={updateObj} handleChange={handleChange} handleBtnClicks={handleBtnClicks} requestSpinner={reqSpinner} joinedTable={joinedTable}/>:<><button type="button" className={"btn btn-outline-primary"} onClick={fetchData}>{btnText === null? ('View Or Edit '+context+'s'): btnText}</button>
         <span className="spinner-border text-primary spinner-border-sm ml-2" hidden={spinner}></span></>}
     </div>
   );

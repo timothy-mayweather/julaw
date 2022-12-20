@@ -24,7 +24,15 @@ class BranchReceivableType extends Pivot
         'created_at',
         'updated_at',
         'deleted_at',
+        'provisional'
     ];
+
+    const defaultData = [
+        'active'=>'Yes'
+    ];
+
+    const refIdName = 'recv_id';
+    const refName = 'name';
 
     /**
      * The attributes that have default values

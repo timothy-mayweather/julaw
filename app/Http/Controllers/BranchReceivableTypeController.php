@@ -13,7 +13,6 @@ class BranchReceivableTypeController extends CommonPivot
     use Helpers;
     public string $modelClass = BranchReceivableType::class;
     public string $mainModelClass = ReceivableType::class;
-    public string $refName = 'recv_id';
 
     /**
      * Display the specified resource.

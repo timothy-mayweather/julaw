@@ -53,25 +53,25 @@ class BranchCustomerController extends CommonPivot
      * @param string $id
      * @return Response
      */
-    public function update(Request $request, string $id): Response
+    public function update(Request $request): Response
     {
-        if($request->has('active')){
-            $key = 'active';
-        }
-        else if($request->has('debtor')){
-            $key = 'debtor';
-        }
-        else if($request->has('prepaid')){
-            $key = 'prepaid';
-        }
-        else{
-            $key = 'description';
-        }
-        $product = BranchCustomer::find($id);
-        $product[$key] = $request->input($key);
-        $product['user_'] = $request->user()->id;
-        $response = $product->save();
-        return Response($response);
+//        if($request->has('active')){
+//            $key = 'active';
+//        }
+//        else if($request->has('debtor')){
+//            $key = 'debtor';
+//        }
+//        else if($request->has('prepaid')){
+//            $key = 'prepaid';
+//        }
+//        else{
+//            $key = 'description';
+//        }
+//        $product = BranchCustomer::find($id);
+//        $product[$key] = $request->input($key);
+//        $product['user_'] = $request->user()->id;
+//        $response = $product->save();
+        return Response('$response');
     }
 
     /**

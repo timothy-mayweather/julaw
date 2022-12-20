@@ -74,25 +74,24 @@ class BranchProductController extends CommonPivot
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param string $id
      * @return Response
      */
-    public function update(Request $request, string $id): Response
+    public function update(Request $request): Response
     {
-        $key = 'active';
-        if ($request->has('price')) {
-            $validator = Validator::make($request->all(), [
-                'price' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return Response($validator->errors());
-            }
-            $key = 'price';
-        }
-        $product = BranchProduct::find($id);
-        $product[$key] = $request->input($key);
-        $product['user_'] = $request->user()->id;
-        $response = $product->save();
-        return Response($response);
+//        $key = 'active';
+//        if ($request->has('price')) {
+//            $validator = Validator::make($request->all(), [
+//                'price' => 'required|integer',
+//            ]);
+//            if ($validator->fails()) {
+//                return Response($validator->errors());
+//            }
+//            $key = 'price';
+//        }
+//        $product = BranchProduct::find($id);
+//        $product[$key] = $request->input($key);
+//        $product['user_'] = $request->user()->id;
+//        $response = $product->save();
+        return Response('$response');
     }
 }

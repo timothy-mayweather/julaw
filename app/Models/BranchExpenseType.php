@@ -28,7 +28,15 @@ class BranchExpenseType extends Pivot
         'created_at',
         'updated_at',
         'deleted_at',
+        'provisional'
     ];
+
+    const defaultData = [
+        'active'=>'Yes'
+    ];
+
+    const refIdName = 'exp_id';
+    const refName = 'name';
 
     /**
      * The attributes that have default values

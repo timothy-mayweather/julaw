@@ -13,7 +13,6 @@ class BranchExpenseTypeController extends CommonPivot
     use Helpers;
     public string $modelClass = BranchExpenseType::class;
     public string $mainModelClass = ExpenseType::class;
-    public string $refName = 'exp_id';
 
     /**
      * Display the specified resource.

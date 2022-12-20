@@ -13,7 +13,6 @@ class BranchTransactionTypeController extends CommonPivot
     use Helpers;
     public string $modelClass = BranchTransactionType::class;
     public string $mainModelClass = TransactionType::class;
-    public string $refName = 'tr_id';
 
     /**
      * Display the specified resource.
