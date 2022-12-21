@@ -8,7 +8,6 @@ use App\Models\Registry\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use function App\Http\Controllers\str_contains;
 
 class BranchProductController extends BranchAffiliated
 {

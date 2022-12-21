@@ -35,7 +35,6 @@ class ProductController extends Common
     public function keep(Request $request, array $record,$validator,$count): array
     {
         return [0,[
-            'id' => (string) Str::uuid(),
             'user_' => $request->user()->id,
             'short_name' => $record['short_name'],
             'name' => $record['name'],
