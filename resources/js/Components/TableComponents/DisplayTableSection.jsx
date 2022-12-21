@@ -1,5 +1,3 @@
-import React from 'react';
-
 const DisplayTableSection = (
   {context,
     table,
@@ -35,7 +33,7 @@ const DisplayTableSection = (
         <i className="fas fa-trash"></i> Delete
       </button>:null}
 
-      {(Object.keys(updateObj).filter((key)=>Math.abs(Number(key))>1)).length>0?<button type="button" className="btn btn-outline-primary" style={{marginRight:"5px"}} onClick={()=>{handleBtnClicks('update')}}>
+      {(Object.keys(updateObj).filter((key)=>Math.abs(Number(key))>=1)).length>0?<button type="button" className="btn btn-outline-primary" style={{marginRight:"5px"}} onClick={()=>{handleBtnClicks('update')}}>
         <i className="fas fa-check"></i> Save Updates
       </button>:null}
 

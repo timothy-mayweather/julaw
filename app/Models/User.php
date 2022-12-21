@@ -2,11 +2,22 @@
 
 namespace App\Models;
 
+use App\Models\BranchAffiliated\Branch;
+use App\Models\Records\Debt;
+use App\Models\Records\Dip;
+use App\Models\Records\Expense;
+use App\Models\Records\Inventory;
+use App\Models\Records\Meter;
+use App\Models\Records\Prepaid;
+use App\Models\Records\ProductSale;
+use App\Models\Records\Receivable;
+use App\Models\Records\Summary;
+use App\Models\Records\Transaction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 
 /**

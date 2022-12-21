@@ -6,7 +6,7 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    use Helpers;
+
     public function create(): \Inertia\Response
     {
 //        $b=$request->user()->branch_id;
@@ -21,6 +21,6 @@ class DashboardController extends Controller
 //            default => null,
 //        };
 //        return Response($resp);
-      return Inertia::render('Dash');
+      return Inertia::render('Dashboard');
     }
 }

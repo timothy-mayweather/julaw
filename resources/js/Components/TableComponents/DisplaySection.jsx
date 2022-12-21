@@ -99,6 +99,7 @@ const DisplaySection = ({context, btnText=null, table, url, documentColumns, doc
           delete obj[id]
         }
       }
+
       setUpdateObj(obj)
     }
   }

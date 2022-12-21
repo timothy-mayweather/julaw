@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Branch;
+use App\Models\BranchAffiliated\Branch;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;

@@ -5,7 +5,7 @@ import {DisplaySection, DisplayTable, InsertSection, InsertTable} from "@/Compon
 const Product = () => {
   const url = '/product'
   const context = 'Product'
-  const headings = ['NAME','SHORT','DESCRIPTION','TYPE','ACTIVE?']
+  const headings = ['NAME','SHORT_NAME','DESCRIPTION','TYPE','ACTIVE?']
   const dataObj = new DataManager('products', {name:'', short_name:'', description:'',type:'',active:'Yes'}, url);
 
   const insertRows = (rowData, pos, handleDelete, handleChange, dataObj) => {
@@ -70,10 +70,34 @@ const Product = () => {
     />
   }
 
+  const bHeadings = ['SHORT_NAME','PRICE','ACTIVE?']
+
+  const branchDisplayRows = (rowData, selectedAdd, selectedDel, editState, handleChange) => {
+    const sharedProps = {handleChange, dataId:rowData['id']}
+
+    return <tr>
+      <td>{rowData['short_name']}</td>
+      <td><Input name='price' type='float' defaultValue={rowData['price']} {...sharedProps}/></td>
+      <td><CheckBox name='active' defaultChecked={rowData['active']==='Yes'} {...sharedProps}/></td>
+      <td>{selectedAdd.hasOwnProperty(rowData['id'])?<SelectBox name='add' value={rowData['id']} checked={selectedAdd[rowData['id']]} handleChange={handleChange}/>:<span></span>}</td>
+      <td>{selectedDel.hasOwnProperty(rowData['id'])?<SelectBox value={rowData['id']} checked={selectedDel[rowData['id']]} handleChange={handleChange}/>:<span></span>}</td>
+    </tr>
+  }
+
+  const branchDisplayTable = (props)=>{
+    return <DisplayTable
+      thead={bHeadings}
+      tfoot={bHeadings}
+      rowBuilder={branchDisplayRows}
+      {...props}
+    />
+  }
+
   return (
     <>
       <InsertSection context={context} table={insertTable} />
       <DisplaySection context={context} table={displayTable} url={url} documentColumns={[0,1,2,3,4]} documentTitle={'Products'}/>
+      <DisplaySection context='BranchProduct' btnText='View Or Edit Branch Products' table={branchDisplayTable} url='/branch-product' joinedTable/>
     </>
   );
 };

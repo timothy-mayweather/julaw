@@ -2,8 +2,8 @@ import {InsertSection, InsertTable, DisplaySection, DisplayTable} from '@/Compon
 import {DelBtn, SelectBox, Input, CheckBox} from "@/Components/FormComponents";
 import DataManager from "@/Helpers/DataManager";
 
-const CommonRegistration = ({url, bUrl, context, bContext, btnText, documentTitle, bDocumentTitle}) => {
-  const headings = ['NAME','DESCRIPTION','ACTIVE']
+const CommonRegistration = ({url, bUrl, context, bContext, btnText, documentTitle}) => {
+  const headings = ['NAME','DESCRIPTION','ACTIVE?']
   const dataObj = new DataManager('transactionTypes', {name:'', description:'', active:'Yes'}, url);
 
   const insertRows = (rowData, pos, handleDelete, handleChange) => {
@@ -48,7 +48,7 @@ const CommonRegistration = ({url, bUrl, context, bContext, btnText, documentTitl
     />
   }
 
-  const bHeadings = ['NAME','ACTIVE']
+  const bHeadings = ['NAME','ACTIVE?']
 
   const branchDisplayRows = (rowData, selectedAdd, selectedDel, editState, handleChange) => {
     const sharedProps = {handleChange, dataId:rowData['id']}
@@ -66,7 +66,6 @@ const CommonRegistration = ({url, bUrl, context, bContext, btnText, documentTitl
       thead={bHeadings}
       tfoot={bHeadings}
       rowBuilder={branchDisplayRows}
-      dataManager={dataObj}
       {...props}
     />
   }
@@ -75,7 +74,7 @@ const CommonRegistration = ({url, bUrl, context, bContext, btnText, documentTitl
     <>
       <InsertSection context={context} table={insertTable} />
       <DisplaySection context={context} table={displayTable} url={url} documentColumns={[0,1,2]} documentTitle={documentTitle}/>
-      <DisplaySection context={bContext} btnText={btnText} table={branchDisplayTable} url={bUrl} documentColumns={[0,1]} documentTitle={bDocumentTitle} joinedTable/>
+      <DisplaySection context={bContext} btnText={btnText} table={branchDisplayTable} url={bUrl} joinedTable/>
     </>
   );
 };

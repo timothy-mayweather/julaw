@@ -139,10 +139,12 @@ class Common extends Controller
                 $validator->errors()->add('row', $count);
                 return Response($validator->errors());
             }
+
             $arr = $this->keep($request,$record,$validator,$count);
             if($arr[0]===1){
                 return Response($arr[1]);
             }
+
             $modelObj = new $this->modelClass($arr[1]);
             if (config('database.default')==='sqlite') {
                 $modelObj->setAttribute('id',0);
