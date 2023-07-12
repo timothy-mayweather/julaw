@@ -16,3 +16,5 @@ yarn-error.log
 /.idea
 /.vscode
 .run_pid
+composer.lock
+package-lock.json
