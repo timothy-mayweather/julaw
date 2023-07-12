@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-require 'database/traits/Definition.php';
+//require 'database/traits/Definition.php';
 use Database\Traits\Definition;
 
 class CreateChangeTables extends Migration

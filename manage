@@ -25,8 +25,8 @@ case $1 in
     fi
     npm install
     npm run build
-    rm -r node_modules/
     php artisan down
+    rm -r node_modules/
     php artisan config:cache
     php artisan event:cache
     php artisan route:cache
@@ -35,7 +35,6 @@ case $1 in
     php artisan storage:link
     php artisan optimize
     php artisan up
-    printf "please open your .env file and change the database credentials if need be \n"
     ;;
 
   "clear")
