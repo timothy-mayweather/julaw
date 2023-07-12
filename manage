@@ -1,0 +1,57 @@
+#!/bin/bash
+case $1 in
+  "dev")
+    printf "Initialising laravel project dependencies in a dev environment\n"
+    composer install
+    npm install
+    FILE=.env
+    if [[ ! -f "$FILE" ]]; then
+      cp .env.example .env
+      php artisan key:generate
+    fi
+    printf "please open your .env file and change the database credentials if need be \n"
+    ;;
+
+   "deploy")
+    printf "Setting up laravel project for a production environment\n"
+    composer install --optimize-autoloader --no-dev
+    FILE=.env
+    if [[ ! -f "$FILE" ]]; then
+      printf "You do not have the .env file, generating one for you!\n"
+      cp .env.example .env
+      php artisan key:generate
+      printf "Please edit your .env file accordingly and rerun the deploy command.\n"
+      exit
+    fi
+    npm install
+    npm run build
+    rm -r node_modules/
+    php artisan down
+    php artisan config:cache
+    php artisan event:cache
+    php artisan route:cache
+    php artisan view:cache
+    php artisan migrate
+    php artisan storage:link
+    php artisan optimize
+    php artisan up
+    printf "please open your .env file and change the database credentials if need be \n"
+    ;;
+
+  "clear")
+  printf "clearing the cached resources of this web app.\n"
+  php artisan config:clear
+  php artisan event:clear
+  php artisan route:clear
+  php artisan cache:clear
+  php artisan view:clear
+  ;;
+
+  *)
+    printf "Invalid command\n"
+    printf "Try\n"
+    printf "dev --to initialise the project for a dev environment\n"
+    printf "deploy --to deploy the website to a server. Note: Please consider elevating the rights for reading and writing!\n"
+    printf "clear --to clear the cache\n"
+    ;;
+esac
